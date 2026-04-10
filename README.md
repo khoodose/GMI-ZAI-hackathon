@@ -1,6 +1,10 @@
 # Makan Maestro
 *Your local insider for any meal that matters*
 
+<p align="center">
+  <img src="demo-vibe.png" alt="Makan Maestro vibe" width="700"/>
+</p>
+
 ---
 
 ## Product Name, Form & Pain Point
