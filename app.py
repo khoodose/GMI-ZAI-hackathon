@@ -230,7 +230,7 @@ def chat(message, history):
 # render=False lets us define the trace component before ChatInterface
 # (so it can be passed to additional_outputs) while rendering it after
 # ---------------------------------------------------------------------------
-with gr.Blocks(title="Singapore Venue Finder") as demo:
+with gr.Blocks(title="Makan Maestro") as demo:
     trace_box = gr.Textbox(
         label="Agent Activity",
         interactive=False,
@@ -247,7 +247,10 @@ with gr.Blocks(title="Singapore Venue Finder") as demo:
 
     gr.ChatInterface(
         fn=chat,
-        title="Singapore Venue Finder",
+        title="Makan Maestro",
+        description="<p style='text-align: center'>Your local insider for any meal that matters — dates, business dinners, client lunches, catching up with friends</p>",
+        textbox=gr.Textbox(placeholder="Tell me who you're meeting — a date, a business contact, friends — and what kind of venue you're looking for", show_label=False),
+        chatbot=gr.Chatbot(label="Chat with your local insider"),
         additional_outputs=[trace_box, vibe_image],
     )
 
