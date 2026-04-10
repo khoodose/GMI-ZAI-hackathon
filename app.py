@@ -230,25 +230,92 @@ def chat(message, history):
 # render=False lets us define the trace component before ChatInterface
 # (so it can be passed to additional_outputs) while rendering it after
 # ---------------------------------------------------------------------------
-with gr.Blocks(title="Makan Maestro") as demo:
+_CSS = """
+/* ── Main background: dark with radial centre-glow ── */
+body, .gradio-container {
+    background: radial-gradient(ellipse at center, #222222 0%, #1A1A1A 70%, #111111 100%) !important;
+    color: #E8DCC8 !important;
+}
+
+/* ── Title ── */
+.gradio-container h1 {
+    color: #D4A847 !important;
+    font-weight: 700 !important;
+}
+
+/* ── Subtitle / description ── */
+.gradio-container .description p,
+.gradio-container .description {
+    color: #A89070 !important;
+}
+
+/* ── Chat bubbles ── */
+.message.user, .message.bot {
+    background: #242424 !important;
+    border: 1px solid #2E2E2E !important;
+    color: #E8DCC8 !important;
+}
+
+/* ── Input textbox ── */
+textarea, input[type="text"] {
+    background: #242424 !important;
+    color: #E8DCC8 !important;
+    border: 1px solid #3A3020 !important;
+}
+
+/* ── Send button ── */
+button.primary, button[variant="primary"] {
+    background: #D4A847 !important;
+    color: #1A1A1A !important;
+    font-weight: 600 !important;
+    border: none !important;
+}
+button.primary:hover, button[variant="primary"]:hover {
+    background: #E0B84E !important;
+}
+
+/* ── Agent Activity panel ── */
+#agent-activity textarea {
+    background: #242424 !important;
+    border-left: 3px solid #D4A847 !important;
+    border-top: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    color: #A89070 !important;
+    padding-left: 12px !important;
+    border-radius: 0 4px 4px 0 !important;
+}
+#agent-activity label {
+    color: #D4A847 !important;
+}
+
+/* ── Tonight's Vibe image ── */
+#vibe-image img {
+    border-radius: 12px !important;
+}
+"""
+
+with gr.Blocks(title="Makan Maestro", css=_CSS) as demo:
     trace_box = gr.Textbox(
         label="Agent Activity",
         interactive=False,
         lines=2,
         max_lines=4,
+        elem_id="agent-activity",
         render=False,
     )
     vibe_image = gr.Image(
         label="Tonight's Vibe",
         interactive=False,
         visible=False,
+        elem_id="vibe-image",
         render=False,
     )
 
     gr.ChatInterface(
         fn=chat,
-        title="Makan Maestro",
-        description="<p style='text-align: center'>Your local insider for any meal that matters — dates, business dinners, client lunches, catching up with friends</p>",
+        title="🍜 Makan Maestro",
+        description="<p style='text-align: center; color: #A89070'>Your local insider for any meal that matters — dates, business dinners, client lunches, catching up with friends</p>",
         textbox=gr.Textbox(placeholder="Tell me who you're meeting — a date, a business contact, friends — and what kind of venue you're looking for", show_label=False),
         chatbot=gr.Chatbot(label="Chat with your local insider"),
         additional_outputs=[trace_box, vibe_image],
