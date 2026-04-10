@@ -8,9 +8,17 @@ from image_gen import generate_vibe_image
 
 load_dotenv()
 
+# ============================================
+# MODEL 1: Claude Sonnet (anthropic/claude-sonnet-4.6)
+# Via GMI Cloud API - handles conversation reasoning
+# and venue recommendations
+# ============================================
+GMI_BASE_URL = "https://api.gmi-serving.com/v1"
+GMI_CHAT_MODEL = "anthropic/claude-sonnet-4.6"
+
 client = OpenAI(
     api_key=os.getenv("GMI_API_KEY"),
-    base_url=os.getenv("GMI_BASE_URL")
+    base_url=GMI_BASE_URL,
 )
 
 # Singapore neighbourhoods for area detection
@@ -146,6 +154,10 @@ def chat(message, history):
         current_params = (area, occasion, price_level, keyword)
 
         if current_params != _places_cache["params"]:
+            # ============================================
+            # EXTERNAL API: Google Places
+            # Fetches real-time venue data (ratings, hours, addresses)
+            # ============================================
             # Params changed (or first call) — fetch fresh results
             print(f"[Places] Triggering API call — area={area!r}, occasion={occasion!r}, price_level={price_level}, keyword={keyword!r}")
             trace = f"🔍 Searching Google Places for: {area} | {keyword} | {_price_label(price_level)}"
@@ -189,13 +201,13 @@ def chat(message, history):
     messages.append({"role": "user", "content": user_content})
 
     response = client.chat.completions.create(
-        model=os.getenv("GMI_CHAT_MODEL"),
+        model=GMI_CHAT_MODEL,
         messages=messages
     )
     reply = response.choices[0].message.content
 
-    # Step 1 — yield chat reply immediately, no image yet
-    yield reply, trace, None
+    # Step 1 — yield chat reply immediately, image panel stays hidden
+    yield reply, trace, gr.update(visible=False)
 
     # Step 2 — generate image if new Places results came in
     if should_generate_image:
@@ -204,12 +216,12 @@ def chat(message, history):
         image_url = generate_vibe_image(img_prompt)
         _places_cache["image_url"] = image_url
 
-        # Step 3 — yield again only if image succeeded
+        # Step 3 — reveal image panel only if generation succeeded
         if image_url:
             yield (
                 reply + "\n\n✨ I've put together a visual of the kind of atmosphere I'm thinking — does this feel right for tonight, or would you prefer somewhere with a different energy?",
                 trace,
-                image_url,
+                gr.update(visible=True, value=image_url),
             )
 
 
@@ -229,6 +241,7 @@ with gr.Blocks(title="Singapore Venue Finder") as demo:
     vibe_image = gr.Image(
         label="Tonight's Vibe",
         interactive=False,
+        visible=False,
         render=False,
     )
 

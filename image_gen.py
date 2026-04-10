@@ -1,3 +1,8 @@
+# ============================================
+# MODEL 2: Gemini 3 Pro Image Preview
+# Via GMI Cloud API - generates atmospheric vibe images
+# ============================================
+
 """
 GMI Cloud image generation helper.
 
